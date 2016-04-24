@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import contextlib
+
 import six
 
 from tensorflow.core.framework import attr_value_pb2
@@ -194,11 +196,7 @@ def _MakeShape(v, arg_name):
                         str(v))
         break
     return v
-  s = tensor_shape.as_shape(v)
-  ret = tensor_shape_pb2.TensorShapeProto()
-  for i in s.as_dimension_list():
-    ret.dim.add(size = i)
-  return ret
+  return tensor_shape.as_shape(v).as_proto()
 
 
 def _MakeTensor(v, arg_name):
@@ -242,6 +240,27 @@ class _OpInfo(object):
               (arg.number_attr, op_def.name, attr_type))
 
 
+# pylint: disable=g-doc-return-or-yield
+@contextlib.contextmanager
+def _MaybeColocateWith(inputs):
+  """A context manager for (maybe) colocating with a list of input tensors.
+
+  Args:
+    inputs: A list of `Tensor` or `Operation` objects.
+
+  Returns:
+    A context manager.
+  """
+  if not inputs:
+    yield
+  else:
+    # NOTE(mrry): The `ops.colocate_with()` function accepts only a single
+    # op or tensor, so we create one context manager per element in the list.
+    with ops.colocate_with(inputs[0]), _MaybeColocateWith(inputs[1:]):
+      yield
+# pylint: enable=g-doc-return-or-yield
+
+
 class OpDefLibrary(object):
   """Holds a collection of OpDefs, can add the corresponding Ops to a graph."""
 
@@ -267,7 +286,7 @@ class OpDefLibrary(object):
     for op_def in op_list.op:
       self.add_op(op_def)
 
-  def apply_op(self, op_type_name, g=None, name=None, **keywords):
+  def apply_op(self, op_type_name, name=None, **keywords):
     # pylint: disable=g-doc-args
     """Add a node invoking a registered Op to a graph.
 
@@ -276,9 +295,6 @@ class OpDefLibrary(object):
        # input1 and input2 can be Tensors or anything ops.convert_to_tensor()
        # will convert to a Tensor.
        op_def_library.apply_op("op", input1=input1, input2=input2)
-       # If none of the inputs are Tensors and your session doesn't have a
-       # default graph, you will have to specify the graph.
-       op_def_library.apply_op("op", input1=input1, g=g)
        # Can specify a node name.
        op_def_library.apply_op("op", input1=input1, name="node_name")
        # Must use keyword arguments, with the names specified in the OpDef.
@@ -291,7 +307,6 @@ class OpDefLibrary(object):
 
     Args:
       op_type_name: string. Must match the name field of a registered Op.
-      g: The graph context (optional)
       name: string. Optional name of the created op.
       **keywords: input Tensor and attr arguments specified by name,
         and optional parameters to pass when constructing the Operation.
@@ -314,16 +329,27 @@ class OpDefLibrary(object):
     try:
       # Need to flatten all the arguments into a list.
       # pylint: disable=protected-access
-      g = ops._get_graph_from_inputs(_Flatten(keywords.values()), graph=g)
+      g = ops._get_graph_from_inputs(_Flatten(keywords.values()))
       # pyline: enable=protected-access
     except AssertionError as e:
       raise RuntimeError(
-          "Need to specify g=graph to Op '%s' (could not determine graph due "
-          "to: %s)" % (op_type_name, e.message))
+          "Cannot determine graph for Op '%s' due to: %s"
+          % (op_type_name, e.message))
 
     # Default name if not specified.
     if name is None:
       name = op_type_name
+
+    # Check for deprecation
+    deprecation_version = op_def.deprecation.version
+    if deprecation_version:
+      producer = g.graph_def_versions.producer
+      if producer >= deprecation_version:
+        raise NotImplementedError(
+            ("Op %s is not available in GraphDef version %d. "
+             "It has been removed in version %d. %s.") %
+            (op_type_name, producer, deprecation_version,
+             op_def.deprecation.explanation))
 
     # Requires that op_def has passed validation (using the C++
     # ValidateOpDef() from ../framework/op_def_util.h).
@@ -380,16 +406,14 @@ class OpDefLibrary(object):
           try:
             if not input_arg.is_ref and dtype:
               dtype = dtypes.as_dtype(dtype).base_dtype
-            values = ops.convert_n_to_tensor_or_indexed_slices(
-                values, name=input_arg.name,
-                dtype=dtype if dtype else None,
+            values = ops.convert_n_to_tensor(
+                values, name=input_arg.name, dtype=dtype if dtype else None,
                 as_ref=input_arg.is_ref)
           except (TypeError, ValueError):
             assert dtype is not None, "Should not fail if dtype is None"
             assert input_arg.number_attr, "Should be number_attr case"
             # What types does the conversion function think values have?
-            values = ops.convert_n_to_tensor_or_indexed_slices(
-                values, as_ref=input_arg.is_ref)
+            values = ops.convert_n_to_tensor(values, as_ref=input_arg.is_ref)
             observed = ", ".join(v.dtype.base_dtype.name for v in values)
 
             prefix = (
@@ -565,6 +589,7 @@ class OpDefLibrary(object):
                                "less than minimum %d." %
                                (key, op_type_name, len(value),
                                 attr_def.minimum))
+          attr_value.list.SetInParent()
         if attr_def.type == "string":
           attr_value.s = _MakeStr(value, key)
           if attr_def.HasField("allowed_values"):
@@ -657,15 +682,20 @@ class OpDefLibrary(object):
         raise TypeError("apply_op() got unexpected keyword arguments: " +
                         ", ".join(sorted(keywords.keys())))
 
-      # Add Op to graph
-      if output_structure:
-        op = g.create_op(op_type_name, inputs, output_types, name=scope,
-                         input_types=input_types, attrs=attr_protos,
-                         op_def=op_def)
-        outputs = op.outputs
-        return _Restructure(ops.convert_n_to_tensor_or_indexed_slices(outputs),
-                            output_structure)
-      else:
-        return g.create_op(op_type_name, inputs, output_types, name=scope,
+      # NOTE(mrry): We add an explicit colocation constraint between
+      # the newly created op and any of its reference-typed inputs.
+      must_colocate_inputs = [val for arg, val in zip(op_def.input_arg, inputs)
+                              if arg.is_ref]
+      with _MaybeColocateWith(must_colocate_inputs):
+        # Add Op to graph
+        if output_structure:
+          op = g.create_op(op_type_name, inputs, output_types, name=scope,
                            input_types=input_types, attrs=attr_protos,
                            op_def=op_def)
+          outputs = op.outputs
+          return _Restructure(ops.convert_n_to_tensor(outputs),
+                              output_structure)
+        else:
+          return g.create_op(op_type_name, inputs, output_types, name=scope,
+                             input_types=input_types, attrs=attr_protos,
+                             op_def=op_def)

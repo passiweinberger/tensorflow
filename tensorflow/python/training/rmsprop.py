@@ -34,6 +34,7 @@ from __future__ import print_function
 
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import constant_op
+from tensorflow.python.ops import math_ops
 from tensorflow.python.training import optimizer
 from tensorflow.python.training import training_ops
 
@@ -41,20 +42,28 @@ from tensorflow.python.training import training_ops
 class RMSPropOptimizer(optimizer.Optimizer):
   """Optimizer that implements the RMSProp algorithm.
 
+  See the [paper]
+  (http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf).
+
   @@__init__
   """
 
-  def __init__(self, learning_rate, decay, momentum=0.0, epsilon=1e-10,
-               use_locking=False, name="RMSProp"):
+  def __init__(self,
+               learning_rate,
+               decay=0.9,
+               momentum=0.0,
+               epsilon=1e-10,
+               use_locking=False,
+               name="RMSProp"):
     """Construct a new RMSProp optimizer.
 
     Args:
       learning_rate: A Tensor or a floating point value.  The learning rate.
-      decay: discounting factor for the history/coming gradient
-      momentum: a scalar tensor.
-      epsilon: small value to avoid zero denominator.
+      decay: Discounting factor for the history/coming gradient
+      momentum: A scalar tensor.
+      epsilon: Small value to avoid zero denominator.
       use_locking: If True use locks for update operation.
-      name: Optional name prefic for the operations created when applying
+      name: Optional name prefix for the operations created when applying
         gradients. Defaults to "RMSProp".
     """
     super(RMSPropOptimizer, self).__init__(use_locking, name)
@@ -89,10 +98,10 @@ class RMSPropOptimizer(optimizer.Optimizer):
     mom = self.get_slot(var, "momentum")
     return training_ops.apply_rms_prop(
         var, rms, mom,
-        self._learning_rate_tensor,
-        self._decay_tensor,
-        self._momentum_tensor,
-        self._epsilon_tensor,
+        math_ops.cast(self._learning_rate_tensor, var.dtype.base_dtype),
+        math_ops.cast(self._decay_tensor, var.dtype.base_dtype),
+        math_ops.cast(self._momentum_tensor, var.dtype.base_dtype),
+        math_ops.cast(self._epsilon_tensor, var.dtype.base_dtype),
         grad, use_locking=self._use_locking).op
 
   def _apply_sparse(self, grad, var):
