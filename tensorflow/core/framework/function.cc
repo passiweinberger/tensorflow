@@ -707,6 +707,10 @@ Status FunctionCallFrame::SetRetval(int index, const Tensor& val) {
 }
 
 FunctionLibraryDefinition::FunctionLibraryDefinition(
+    const FunctionLibraryDefinition& other)
+    : function_defs_(other.function_defs_), func_grad_(other.func_grad_) {}
+
+FunctionLibraryDefinition::FunctionLibraryDefinition(
     const FunctionDefLibrary& def_lib)
     : function_defs_(def_lib.function_size()) {
   for (const auto& fdef : def_lib.function()) {
@@ -729,6 +733,15 @@ const FunctionDef* FunctionLibraryDefinition::Find(const string& name) const {
   }
 }
 
+Status FunctionLibraryDefinition::AddFunctionDef(const FunctionDef& fdef) {
+  if (!function_defs_.insert({fdef.signature().name(), fdef}).second) {
+    return errors::InvalidArgument("Function with name: ",
+                                   fdef.signature().name(),
+                                   " already exists in function library.");
+  }
+  return Status::OK();
+}
+
 string FunctionLibraryDefinition::FindGradient(const string& func) const {
   return gtl::FindWithDefault(func_grad_, func, "");
 }
@@ -740,6 +753,19 @@ const OpDef* FunctionLibraryDefinition::LookUp(const string& op,
     return &(fdef->signature());
   }
   return OpRegistry::Global()->LookUp(op, status);
+}
+
+FunctionDefLibrary FunctionLibraryDefinition::ToProto() const {
+  FunctionDefLibrary lib;
+  for (const auto& f : function_defs_) {
+    *lib.add_function() = f.second;
+  }
+  for (const auto& g : func_grad_) {
+    GradientDef* gd = lib.add_gradient();
+    gd->set_function_name(g.first);
+    gd->set_gradient_func(g.second);
+  }
+  return lib;
 }
 
 Status InstantiateFunction(const FunctionDef& fdef,

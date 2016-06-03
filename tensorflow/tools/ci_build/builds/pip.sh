@@ -40,6 +40,9 @@
 # If NO_TEST_ON_INSTALL has any non-empty and non-0 value, the test-on-install
 # part will be skipped.
 #
+# If NO_TEST_USER_OPS has any non-empty and non-0 value, the testing of user-
+# defined ops against the installation will be skipped.
+#
 # Use --mavx or --mavx2 to let bazel use --copt=-mavx or --copt=-mavx2 options
 # while building the pip package, respectively.
 #
@@ -67,6 +70,13 @@ if [[ ! -z "${TF_BUILD_BAZEL_CLEAN}" ]] && \
   bazel clean
 fi
 
+DO_TEST_USER_OPS=1
+if [[ ! -z "${NO_TEST_USER_OPS}" ]] && \
+   [[ "${NO_TEST_USER_OPS}" != "0" ]]; then
+  echo "NO_TEST_USER_OPS=${NO_TEST_USER_OPS}: Will skip testing of user ops"
+  DO_TEST_USER_OPS=0
+fi
+
 DO_TEST_TUTORIALS=0
 DO_INTEGRATION_TESTS=0
 MAVX_FLAG=""
@@ -80,7 +90,7 @@ while true; do
   elif [[ "${1}" == "--mavx2" ]]; then
     MAVX_FLAG="--copt=-mavx2"
   fi
- 
+
   shift
   if [[ -z "${1}" ]]; then
     break
@@ -174,10 +184,11 @@ source "${VENV_DIR}/bin/activate" || \
 
 
 # Install the pip file in virtual env (plus missing dependencies)
-pip install -v ${WHL_PATH} || die "pip install (without --upgrade) FAILED"
+
 # Force tensorflow reinstallation. Otherwise it may not get installed from
 # last build if it had the same version number as previous build.
-pip install -v --upgrade --no-deps --force-reinstall ${WHL_PATH} || \
+PIP_FLAGS="--upgrade --force-reinstall"
+pip install -v ${PIP_FLAGS} ${WHL_PATH} || \
     die "pip install (forcing to reinstall tensorflow) FAILED"
 echo "Successfully installed pip package ${WHL_PATH}"
 
@@ -202,6 +213,12 @@ fi
 
 "${SCRIPT_DIR}/test_installation.sh" --virtualenv ${GPU_FLAG} ||
     die "PIP tests-on-install FAILED"
+
+# Test user ops
+if [[ "${DO_TEST_USER_OPS}" == "1" ]]; then
+  "${SCRIPT_DIR}/test_user_ops.sh" --virtualenv ${GPU_FLAG} || \
+      die "PIP user-op tests-on-install FAILED"
+fi
 
 # Optional: Run the tutorial tests
 if [[ "${DO_TEST_TUTORIALS}" == "1" ]]; then

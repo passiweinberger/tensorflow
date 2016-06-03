@@ -27,6 +27,8 @@ We support different ways to install TensorFlow:
    impact existing Python programs on your machine.
 *  [Docker install](#docker-installation): Run TensorFlow in a Docker container
    isolated from all other programs on your machine.
+*  [Installing from sources](#installing-from-sources): Install TensorFlow by
+   building a pip wheel that you then install using pip.
 
 If you are familiar with Pip, Virtualenv, Anaconda, or Docker, please feel free to adapt
 the instructions to your particular needs.  The names of the pip and Docker
@@ -57,31 +59,31 @@ $ sudo easy_install pip
 Install TensorFlow:
 
 ```bash
-# Ubuntu/Linux 64-bit, CPU only:
-$ sudo pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0rc0-cp27-none-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, CPU only, Python 2.7:
+$ sudo pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0-cp27-none-linux_x86_64.whl
 
-# Ubuntu/Linux 64-bit, GPU enabled. Requires CUDA toolkit 7.5 and CuDNN v4.  For
-# other versions, see "Install from sources" below.
-$ sudo pip install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0rc0-cp27-none-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, GPU enabled, Python 2.7. Requires CUDA toolkit 7.5 and CuDNN v4.
+# For other versions, see "Install from sources" below.
+$ sudo pip install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0-cp27-none-linux_x86_64.whl
 
 # Mac OS X, CPU only:
 $ sudo easy_install --upgrade six
-$ sudo pip install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0rc0-py2-none-any.whl
+$ sudo pip install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0-py2-none-any.whl
 ```
 
 For python3:
 
 ```bash
-# Ubuntu/Linux 64-bit, CPU only:
-$ sudo pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0rc0-cp34-cp34m-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, CPU only, Python 3.4:
+$ sudo pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0-cp34-cp34m-linux_x86_64.whl
 
-# Ubuntu/Linux 64-bit, GPU enabled. Requires CUDA toolkit 7.5 and CuDNN v4.  For
-# other versions, see "Install from sources" below.
-$ sudo pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0rc0-cp34-cp34m-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, GPU enabled, Python 3.4. Requires CUDA toolkit 7.5 and CuDNN v4.
+# For other versions, see "Install from sources" below.
+$ sudo pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0-cp34-cp34m-linux_x86_64.whl
 
 # Mac OS X, CPU only:
 $ sudo easy_install --upgrade six
-$ sudo pip3 install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0rc0-py3-none-any.whl
+$ sudo pip3 install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0-py3-none-any.whl
 ```
 
 NOTE: If you are upgrading from a previous installation of TensorFlow < 0.7.1,
@@ -132,15 +134,15 @@ $ source ~/tensorflow/bin/activate  # If using bash
 $ source ~/tensorflow/bin/activate.csh  # If using csh
 (tensorflow)$  # Your prompt should change
 
-# Ubuntu/Linux 64-bit, CPU only:
-(tensorflow)$ pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0rc0-cp27-none-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, CPU only, Python 2.7:
+(tensorflow)$ pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0-cp27-none-linux_x86_64.whl
 
-# Ubuntu/Linux 64-bit, GPU enabled. Requires CUDA toolkit 7.5 and CuDNN v4.  For
-# other versions, see "Install from sources" below.
-(tensorflow)$ pip install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0rc0-cp27-none-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, GPU enabled, Python 2.7. Requires CUDA toolkit 7.5 and CuDNN v4.
+# For other versions, see "Install from sources" below.
+(tensorflow)$ pip install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0-cp27-none-linux_x86_64.whl
 
 # Mac OS X, CPU only:
-(tensorflow)$ pip install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0rc0-py2-none-any.whl
+(tensorflow)$ pip install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0-py2-none-any.whl
 ```
 
 and again for python3:
@@ -150,15 +152,15 @@ $ source ~/tensorflow/bin/activate  # If using bash
 $ source ~/tensorflow/bin/activate.csh  # If using csh
 (tensorflow)$  # Your prompt should change
 
-# Ubuntu/Linux 64-bit, CPU only:
-(tensorflow)$ pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0rc0-cp34-cp34m-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, CPU only, Python 3.4:
+(tensorflow)$ pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0-cp34-cp34m-linux_x86_64.whl
 
-# Ubuntu/Linux 64-bit, GPU enabled. Requires CUDA toolkit 7.5 and CuDNN v4.  For
-# other versions, see "Install from sources" below.
-(tensorflow)$ pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0rc0-cp34-cp34m-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, GPU enabled, Python 3.4. Requires CUDA toolkit 7.5 and CuDNN v4.
+# For other versions, see "Install from sources" below.
+(tensorflow)$ pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0-cp34-cp34m-linux_x86_64.whl
 
 # Mac OS X, CPU only:
-(tensorflow)$ pip3 install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0rc0-py3-none-any.whl
+(tensorflow)$ pip3 install --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0-py3-none-any.whl
 ```
 
 With the Virtualenv environment activated, you can now
@@ -188,7 +190,7 @@ $ source ~/tensorflow/bin/activate.csh  # If using csh.
 
 [Anaconda](https://www.continuum.io/why-anaconda) is a Python distribution that
 includes a large number of standard numeric and scientific computing packages.
-Anaconda uses a package manager called "conda" that has its own 
+Anaconda uses a package manager called "conda" that has its own
 [environment system](http://conda.pydata.org/docs/using/envs.html) similar to Virtualenv.
 
 As with Virtualenv, conda environments keep the dependencies required by
@@ -223,15 +225,15 @@ Use the `--ignore-installed` flag to prevent errors about `easy_install`.
 $ source activate tensorflow
 (tensorflow)$  # Your prompt should change
 
-# Ubuntu/Linux 64-bit, CPU only:
-(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0rc0-cp27-none-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, CPU only, Python 2.7:
+(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0-cp27-none-linux_x86_64.whl
 
-# Ubuntu/Linux 64-bit, GPU enabled. Requires CUDA toolkit 7.5 and CuDNN v4.  For
-# other versions, see "Install from sources" below.
-(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0rc0-cp27-none-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, GPU enabled, Python 2.7. Requires CUDA toolkit 7.5 and CuDNN v4.
+# For other versions, see "Install from sources" below.
+(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0-cp27-none-linux_x86_64.whl
 
 # Mac OS X, CPU only:
-(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0rc0-py2-none-any.whl
+(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0-py2-none-any.whl
 ```
 
 and again for Python 3:
@@ -240,15 +242,15 @@ and again for Python 3:
 $ source activate tensorflow
 (tensorflow)$  # Your prompt should change
 
-# Ubuntu/Linux 64-bit, CPU only:
-(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0rc0-cp34-cp34m-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, CPU only, Python 3.4:
+(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.8.0-cp34-cp34m-linux_x86_64.whl
 
-# Ubuntu/Linux 64-bit, GPU enabled. Requires CUDA toolkit 7.5 and CuDNN v4.  For
-# other versions, see "Install from sources" below.
-(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0rc0-cp34-cp34m-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, GPU enabled, Python 3.4. Requires CUDA toolkit 7.5 and CuDNN v4.
+# For other versions, see "Install from sources" below.
+(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.8.0-cp34-cp34m-linux_x86_64.whl
 
 # Mac OS X, CPU only:
-(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0rc0-py3-none-any.whl
+(tensorflow)$ pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0-py3-none-any.whl
 ```
 
 With the conda environment activated, you can now
@@ -289,7 +291,7 @@ code.
 * `gcr.io/tensorflow/tensorflow:latest-devel-gpu`: GPU Binary image plus source
 code.
 
-We also have tags with `latest` replaced by a released version (e.g., `0.8.0rc0-gpu`).
+We also have tags with `latest` replaced by a released version (e.g., `0.8.0-gpu`).
 
 With Docker the installation is as follows:
 
@@ -307,8 +309,12 @@ After Docker is installed, launch a Docker container with the TensorFlow binary
 image as follows.
 
 ```bash
-$ docker run -it gcr.io/tensorflow/tensorflow
+$ docker run -it -p 8888:8888 gcr.io/tensorflow/tensorflow
 ```
+
+The option `-p 8888:8888` is used to publish the Docker container᾿s internal port to the host machine, in this case to ensure Jupyter notebook connection.
+
+The format of the port mapping `hostPort:containerPort`. You can speficy any valid port number for the host port but has to be `8888` for the container port portion.
 
 If you're using a container with GPU support, some additional flags must be
 passed to expose the GPU device to the container. For the default config, we
@@ -404,13 +410,13 @@ using pip. You'll need pip for that, so install it as described
 ### Clone the TensorFlow repository
 
 ```bash
-$ git clone --recurse-submodules https://github.com/tensorflow/tensorflow
+$ git clone https://github.com/tensorflow/tensorflow
 ```
 
-`--recurse-submodules` is required to fetch the protobuf library that TensorFlow
-depends on. Note that these instructions will install the latest master branch
+Note that these instructions will install the latest master branch
 of tensorflow. If you want to install a specific branch (such as a release branch),
-pass `-b <branchname>` to the `git clone` command.
+pass `-b <branchname>` to the `git clone` command and `--recurse-submodules` for
+r0.8 and earlier to fetch the protobuf library that TensorFlow depends on. 
 
 ### Installation for Linux
 
@@ -435,7 +441,10 @@ binary path.
 #### Install other dependencies
 
 ```bash
-$ sudo apt-get install python-numpy swig python-dev
+# For Python 2.7:
+$ sudo apt-get install python-numpy swig python-dev python-wheel
+# For Python 3.x:
+$ sudo apt-get install python3-numpy swig python3-dev python3-wheel
 ```
 
 #### Configure the installation
@@ -464,6 +473,10 @@ Supported cards include but are not limited to:
 * NVidia K20
 * NVidia K40
 
+##### Check NVIDIA Compute Capability of your GPU card
+
+https://developer.nvidia.com/cuda-gpus
+
 ##### Download and install Cuda Toolkit
 
 https://developer.nvidia.com/cuda-downloads
@@ -487,13 +500,13 @@ to reflect the cuDNN version you downloaded):
 tar xvzf cudnn-7.5-linux-x64-v4.tgz
 sudo cp cudnn-7.5-linux-x64-v4/cudnn.h /usr/local/cuda/include
 sudo cp cudnn-7.5-linux-x64-v4/libcudnn* /usr/local/cuda/lib64
-sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
+sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
 ```
 
 ##### Configure TensorFlow's canonical view of Cuda libraries
 
 When running the `configure` script from the root of your source tree, select
-the option `Y` when asked to build TensorFlow with GPU support. If you have 
+the option `Y` when asked to build TensorFlow with GPU support. If you have
 several versions of Cuda or cuDNN installed, you should definitely select
 one explicitly instead of relying on the system default. You should see
 prompts like the following:
@@ -503,6 +516,9 @@ $ ./configure
 Please specify the location of python. [Default is /usr/bin/python]:
 Do you wish to build TensorFlow with GPU support? [y/N] y
 GPU support will be enabled for TensorFlow
+
+Please specify which gcc nvcc should use as the host compiler. [Default is
+/usr/bin/gcc]: /usr/bin/gcc-4.9
 
 Please specify the Cuda SDK version you want to use, e.g. 7.0. [Leave
 empty to use system default]: 7.5
@@ -517,15 +533,17 @@ Please specify the location where the cuDNN 4.0.4 library is installed. Refer to
 README.md for more details. [default is: /usr/local/cuda]: /usr/local/cudnn-r4-rc/
 
 Please specify a list of comma-separated Cuda compute capabilities you want to
-build with. You can find the compute capability of your device at: 
+build with. You can find the compute capability of your device at:
 https://developer.nvidia.com/cuda-gpus.
 Please note that each additional compute capability significantly increases your
 build time and binary size. [Default is: \"3.5,5.2\"]: 3.5
-    
+
 Setting up Cuda include
 Setting up Cuda lib64
 Setting up Cuda bin
 Setting up Cuda nvvm
+Setting up CUPTI include
+Setting up CUPTI lib64
 Configuration finished
 ```
 
@@ -620,7 +638,7 @@ $ bazel build -c opt --config=cuda //tensorflow/tools/pip_package:build_pip_pack
 $ bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 
 # The name of the .whl file will depend on your platform.
-$ pip install /tmp/tensorflow_pkg/tensorflow-0.8.0rc0-py2-none-linux_x86_64.whl
+$ sudo pip install /tmp/tensorflow_pkg/tensorflow-0.8.0-py2-none-any.whl
 ```
 
 ## Setting up TensorFlow for Development
@@ -640,7 +658,7 @@ bazel build -c opt --config=cuda //tensorflow/tools/pip_package:build_pip_packag
 
 mkdir _python_build
 cd _python_build
-ln -s ../bazel-bin/tensorflow/tools/pip_package/build_pip_package.runfiles/* .
+ln -s ../bazel-bin/tensorflow/tools/pip_package/build_pip_package.runfiles/org_tensorflow/* .
 ln -s ../tensorflow/tools/pip_package/* .
 python setup.py develop
 ```
@@ -779,6 +797,24 @@ SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed
 ```
 
 Solution: Download the wheel manually via curl or wget, and pip install locally.
+
+
+#### Operation not permitted
+
+If, despite using `sudo`, you encounter an error like:
+
+```bash
+...
+Installing collected packages: setuptools, protobuf, wheel, numpy, tensorflow
+Found existing installation: setuptools 1.1.6
+Uninstalling setuptools-1.1.6:
+Exception:
+...
+[Errno 1] Operation not permitted: '/tmp/pip-a1DXRT-uninstall/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/_markerlib'
+```
+
+Solution: Add an `--ignore_installed` flag to the pip command.
+
 
 ### Linux issues
 

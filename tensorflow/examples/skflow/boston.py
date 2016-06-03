@@ -1,4 +1,4 @@
-#  Copyright 2015-present The Scikit Flow Authors. All Rights Reserved.
+#  Copyright 2016 The TensorFlow Authors. All Rights Reserved.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -40,6 +40,6 @@ regressor = skflow.TensorFlowDNNRegressor(hidden_units=[10, 10],
 regressor.fit(X_train, y_train)
 
 # Predict and score
-score = metrics.mean_squared_error(regressor.predict(scaler.fit_transform(X_test)), y_test)
+score = metrics.mean_squared_error(regressor.predict(scaler.transform(X_test)), y_test)
 
 print('MSE: {0:f}'.format(score))

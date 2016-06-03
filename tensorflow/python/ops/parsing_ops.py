@@ -225,7 +225,7 @@ def parse_example(serialized, features, name=None, example_names=None):
   features: {
       "kw": VarLenFeature(tf.string),
       "dank": VarLenFeature(tf.int64),
-      "gps": VarLenFeature(tf.float),
+      "gps": VarLenFeature(tf.float32),
   }
   ```
 
@@ -297,9 +297,8 @@ def parse_example(serialized, features, name=None, example_names=None):
   Raises:
     ValueError: if any feature is invalid.
   """
-  # pylint: enable=line-too-long
   if not features:
-    raise ValueError("Missing features.")
+    raise ValueError("Missing: features was %s." % features)
   (sparse_keys, sparse_types, dense_keys, dense_types, dense_defaults,
    dense_shapes) = _features_to_raw_params(
        features, [VarLenFeature, FixedLenFeature])

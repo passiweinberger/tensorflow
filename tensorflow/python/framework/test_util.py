@@ -39,7 +39,7 @@ from tensorflow.python.framework import errors
 from tensorflow.python.framework import ops
 from tensorflow.python.framework import versions
 from tensorflow.python.platform import googletest
-from tensorflow.python.platform import logging
+from tensorflow.python.platform import tf_logging as logging
 from tensorflow.python.util import compat
 from tensorflow.python.util.protobuf import compare
 
@@ -101,6 +101,10 @@ def assert_equal_graph_def(actual, expected):
 
 def IsGoogleCudaEnabled():
   return pywrap_tensorflow.IsGoogleCudaEnabled()
+
+
+def CudaSupportsHalfMatMulAndConv():
+  return pywrap_tensorflow.CudaSupportsHalfMatMulAndConv()
 
 
 class TensorFlowTestCase(googletest.TestCase):
@@ -548,8 +552,8 @@ class TensorFlowTestCase(googletest.TestCase):
     """Asserts that the two given devices are the same.
 
     Args:
-      device1: A string device name or TensorFlow `Device` object.
-      device2: A string device name or TensorFlow `Device` object.
+      device1: A string device name or TensorFlow `DeviceSpec` object.
+      device2: A string device name or TensorFlow `DeviceSpec` object.
     """
     device1 = pydev.canonical_name(device1)
     device2 = pydev.canonical_name(device2)
